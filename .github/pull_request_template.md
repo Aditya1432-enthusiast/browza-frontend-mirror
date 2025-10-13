@@ -1,21 +1,18 @@
 ## Summary
-<!-- What & why -->
+What changed and why (1–2 lines).
 
-## Screenshots / Loom
-<!-- UI screenshots or short video -->
+## Screens / Loom
+Loom: (2-min max)  
+Screenshots (if any):
 
-## Test Steps
-1.
-2.
-3.
+## How to test
+1) 
+2) 
+3) 
 
-## Acceptance Criteria
-- [ ] Meets spec / ticket
-- [ ] No console errors
-- [ ] Mobile & desktop OK
-- [ ] a11y check (labels, focus)
-
-## “Done” Means
-- [ ] 1 review approved
-- [ ] Squash merge
-- [ ] Notes added to CHANGELOG (if needed)
+## Checklist
+- [ ] Runs locally with one command; `.env.example` included
+- [ ] README updated (setup + endpoints)
+- [ ] Logs on error; no secrets in logs
+- [ ] Loading/empty/error states (if UI)
+- [ ] Added to Project board; linked to Milestone
