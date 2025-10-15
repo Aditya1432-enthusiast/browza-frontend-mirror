@@ -1,0 +1,19 @@
+name: Mirror main to personal repo
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Push all refs to mirror
+        run: |
+          git remote add mirror https://${{ secrets.MIRROR_TOKEN }}@github.com/${{ github.actor }}/dummy.git
+          git remote set-url mirror ${{ secrets.MIRROR_URL }}
+          git push mirror --all
+          git push mirror --tags
