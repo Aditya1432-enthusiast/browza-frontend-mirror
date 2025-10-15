@@ -15,3 +15,16 @@
 - `/components` (UI)
 - `/lib` (utils)
 - `/styles` (globals.css)
+
+## Browza Frontend (Next.js)
+
+Install dependencies:
+npm install
+Start development server:
+npm dev
+→ App runs at http://localhost:3000
+
+Build for production:
+npm build
+Start production server:
+npm start
