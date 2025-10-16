@@ -1,8 +1,24 @@
-name: Mirror main to personal repo (TEMP DISABLED)
-on: [push]
+name: Mirror main to personal repo
+
+on:
+  push:
+    branches: [ "main" ]  # runs only after merges to main
+
+permissions:
+  contents: read
+
 jobs:
   mirror:
-    if: false
+    if: ${{ secrets.MIRROR_URL }}  # only runs if the secret is present
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Temporarily disabled"
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Push all refs to mirror
+        env:
+          MIRROR_URL: ${{ secrets.MIRROR_URL }}
+        run: |
+          git remote add mirror "$MIRROR_URL"
+          git push mirror --all
+          git push mirror --tags
