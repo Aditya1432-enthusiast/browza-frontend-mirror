@@ -1,49 +1,19 @@
-name: Mirror main to personal repo
+- uses: actions/checkout@v4
+  with:
+    fetch-depth: 0
+    persist-credentials: false   # avoid github-actions[bot] auth
 
-on:
-  push:
-    branches: [ "main" ]
-
-permissions:
-  contents: read
-
-jobs:
-  mirror:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          persist-credentials: false   # don't use GITHUB_TOKEN
-
-      - name: Mirror to personal (verify then push)
-        env:
-          MIRROR_URL_RAW: ${{ secrets.MIRROR_URL }}
-        run: |
-          set -euo pipefail
-          if [ -z "${MIRROR_URL_RAW:-}" ]; then
-            echo "MIRROR_URL is not set; skipping mirror."
-            exit 0
-          fi
-
-          # remove any auth header set by checkout
-          git config --global --unset-all http.https://github.com/.extraheader || true
-
-          # clean secret (strip hidden newlines/spaces)
-          MIRROR_URL=$(printf '%s' "$MIRROR_URL_RAW" | tr -d '\r\n' | sed -e 's/[[:space:]]//g')
-
-          SAFE_URL=$(echo "$MIRROR_URL" | sed -E 's#https://[^@]+@#https://#')
-          echo "Will mirror to: $SAFE_URL"
-
-          # quick reachability check: 404=bad owner/repo, 401=bad token
-          if ! git ls-remote "$MIRROR_URL" >/dev/null 2>&1; then
-            echo "Cannot reach $SAFE_URL. Check owner/repo spelling, token scopes, and that the repo exists."
-            exit 1
-          fi
-
-          # add/replace remote and PUSH EVERYTHING, OVERWRITING remote refs
-          git remote remove mirror 2>/dev/null || true
-          git remote add mirror "$MIRROR_URL"
-
-          # this overwrites branches/tags on the mirror (intended for a mirror repo)
-          git push --mirror mirror
+- name: Mirror to personal (verify then push)
+  env:
+    MIRROR_URL_RAW: ${{ secrets.MIRROR_URL }}
+  run: |
+    set -euo pipefail
+    git config --global --unset-all http.https://github.com/.extraheader || true
+    MIRROR_URL=$(printf '%s' "$MIRROR_URL_RAW" | tr -d '\r\n' | sed -e 's/[[:space:]]//g')
+    SAFE_URL=$(echo "$MIRROR_URL" | sed -E 's#https://[^@]+@#https://#')
+    echo "Will mirror to: $SAFE_URL"
+    if ! git ls-remote "$MIRROR_URL" >/dev/null 2>&1; then
+      echo "Cannot reach $SAFE_URL"; exit 1; fi
+    git remote remove mirror 2>/dev/null || true
+    git remote add mirror "$MIRROR_URL"
+    git push --mirror mirror
