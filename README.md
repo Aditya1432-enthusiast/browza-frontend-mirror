@@ -6,6 +6,7 @@
 - Dev: `pnpm dev` → http://localhost:3000
 
 - .......
+- ........
 
 ## Branching & PRs
 - Branch names: `feat/<short>`, `fix/<short>`, `chore/<short>`
