@@ -2,27 +2,28 @@ name: Mirror main to personal repo
 
 on:
   push:
-    branches: [ "main" ]  # runs only after merges to main
+    branches: [ "main" ]  # run only after merges to main
 
 permissions:
   contents: read
 
-# expose the secret as an env so we can use it in job-level "if:"
-env:
-  MIRROR_URL: ${{ secrets.MIRROR_URL }}
-
 jobs:
   mirror:
-    # secrets.* is not allowed here; use env.MIRROR_URL instead
-    if: ${{ env.MIRROR_URL != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Push all refs to mirror
+      - name: Mirror to personal (skip if secret missing)
+        env:
+          MIRROR_URL: ${{ secrets.MIRROR_URL }}
         run: |
+          if [ -z "$MIRROR_URL" ]; then
+            echo "MIRROR_URL is not set; skipping mirror."
+            exit 0
+          fi
+          git remote remove mirror 2>/dev/null || true
           git remote add mirror "$MIRROR_URL"
           git push mirror --all
           git push mirror --tags
