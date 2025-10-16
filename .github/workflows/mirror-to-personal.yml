@@ -2,7 +2,7 @@ name: Mirror main to personal repo
 
 on:
   push:
-    branches: [ "main" ]  # run only after merges to main
+    branches: [ "main" ]   # runs only after merges to main
 
 permissions:
   contents: read
@@ -15,14 +15,28 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Mirror to personal (skip if secret missing)
+      - name: Mirror to personal (verify then push)
         env:
-          MIRROR_URL: ${{ secrets.MIRROR_URL }}
+          MIRROR_URL_RAW: ${{ secrets.MIRROR_URL }}
         run: |
-          if [ -z "$MIRROR_URL" ]; then
+          set -euo pipefail
+          if [ -z "${MIRROR_URL_RAW:-}" ]; then
             echo "MIRROR_URL is not set; skipping mirror."
             exit 0
           fi
+          # Strip any hidden CR/LF/whitespace
+          MIRROR_URL=$(printf '%s' "$MIRROR_URL_RAW" | tr -d '\r\n' | sed -e 's/[[:space:]]//g')
+
+          # Show where we're pushing (token masked)
+          SAFE_URL=$(echo "$MIRROR_URL" | sed -E 's#https://[^@]+@#https://#')
+          echo "Will mirror to: $SAFE_URL"
+
+          # Quick reachability check: 404=bad owner/repo, 401=bad token
+          if ! git ls-remote "$MIRROR_URL" >/dev/null 2>&1; then
+            echo "Cannot reach $SAFE_URL. Check owner/repo spelling, token scopes, and that the repo exists."
+            exit 1
+          fi
+
           git remote remove mirror 2>/dev/null || true
           git remote add mirror "$MIRROR_URL"
           git push mirror --all
