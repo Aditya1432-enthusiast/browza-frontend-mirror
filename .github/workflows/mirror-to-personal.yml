@@ -7,17 +7,21 @@ on:
 permissions:
   contents: read
 
+# expose the secret as an env so we can use it in job-level "if:"
+env:
+  MIRROR_URL: ${{ secrets.MIRROR_URL }}
+
 jobs:
   mirror:
-    if: ${{ secrets.MIRROR_URL }}  # only runs if the secret is present
+    # secrets.* is not allowed here; use env.MIRROR_URL instead
+    if: ${{ env.MIRROR_URL != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
       - name: Push all refs to mirror
-        env:
-          MIRROR_URL: ${{ secrets.MIRROR_URL }}
         run: |
           git remote add mirror "$MIRROR_URL"
           git push mirror --all
