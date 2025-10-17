@@ -1,7 +1,8 @@
 # Browza Frontend (Next.js)
 
 
-THIS IS A TEST MESSAGE< USERS READING IT CAN SKIP..
+AAAAAABBBBBBBBB
+
 
 ## Quick Start
 - Node 20+, pnpm recommended.
