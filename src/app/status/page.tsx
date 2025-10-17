@@ -1,33 +1,35 @@
-"use client"
+"use client";
 
-import React, { useEffect, useState } from 'react'
-import { statusApi } from '../lib/api'
+import React from "react";
+import { useQuery } from "@tanstack/react-query";
+import { statusApi } from "../lib/api";
 
-interface statusData {
-    ok: boolean;
-    ts: string;
+interface StatusData {
+  ok: boolean;
+  ts: string;
 }
 
 const Status = () => {
-    const [statusData, setstatusData] = useState<statusData | null>(null);
+  const { data, isLoading, isError } = useQuery<StatusData | null>({
+    queryKey: ["status"],
+    queryFn: async (): Promise<StatusData | null> => {
+      const res = await statusApi();
+      return res ?? null; 
+    },
+  });
 
-    useEffect(() => {
-        const fetchStatus = async () => {
-            const data = await statusApi();
-            
-            if (data) {
-                setstatusData(data)
-            }
-        }
-        
-        fetchStatus();
-    }, [])
+  if (isLoading) return <div>Loading status...</div>;
+  if (isError) return <div>Failed to fetch status.</div>;
 
-    return (
-        <div>
-            {JSON.stringify(statusData)}
-        </div>
-    )
-}
+  return (
+    <div>
+      {data ? (
+        <pre>{JSON.stringify(data, null, 2)}</pre>
+      ) : (
+        <div>No status data available</div>
+      )}
+    </div>
+  );
+};
 
-export default Status
+export default Status;
