@@ -10,12 +10,14 @@ permissions:
 
 jobs:
   mirror:
+    # Run ONLY in the org repo (prevents execution in the mirror repo)
+    if: ${{ github.repository == 'BrowzaHQ/browza-frontend' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          persist-credentials: false
+          persist-credentials: false   # avoid github-actions[bot] auth
 
       - name: Mirror to personal (verify then push)
         env:
@@ -32,16 +34,16 @@ jobs:
           # 2) Remove any auth header injected by checkout
           git config --global --unset-all http.https://github.com/.extraheader || true
 
-          # 3) Clean the secret: strip CR/LF/whitespace and any stray double quotes
+          # 3) Clean the secret: strip CR/LF/quotes/spaces
           MIRROR_URL=$(printf '%s' "$MIRROR_URL_RAW" | tr -d '\r\n"' | sed -e 's/[[:space:]]//g')
 
-          # 4) Log safe target (token masked)
+          # 4) Show safe target (token masked)
           SAFE_URL=$(printf '%s' "$MIRROR_URL" | sed -E 's#https://[^@]+@#https://#')
           echo "Will mirror to: $SAFE_URL"
 
-          # 5) Reachability check (use printf to avoid quote issues)
+          # 5) Reachability check — 404 wrong owner/repo; 401 token perms
           if ! git ls-remote "$MIRROR_URL" >/dev/null 2>&1; then
-            printf 'Cannot reach %s. Check owner/repo spelling, token scopes, and that the repo exists.\n' "$SAFE_URL"
+            echo "Cannot reach $SAFE_URL. Check owner/repo spelling, token scopes, and that the repo exists."
             exit 1
           fi
 
