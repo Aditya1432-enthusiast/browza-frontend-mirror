@@ -1,18 +1,18 @@
 "use client"
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
 export default function Home() {
 const router= useRouter();
 
 
-useEffect(()=>{
-router.push("/status")
-},[router])
-
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-               
-    </div>
+<main>
+      <h2>Buyer Web (Staging)</h2>
+      <p>This is a minimal placeholder to get a Vercel URL.</p>
+      <p>Use the <a href="/health">Health</a> page to test the API.</p>
+
+
+      <button onClick={()=>{router.push("/status")}}>Status page</button>
+    </main>
   );
 }

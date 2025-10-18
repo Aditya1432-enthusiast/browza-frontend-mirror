@@ -1,5 +1,9 @@
 # Browza Frontend (Next.js)
 
+
+AAAAAABBBBBBBBB
+
+
 ## Quick Start
 - Node 20+, pnpm recommended.
 - Install: `pnpm install`
@@ -28,3 +32,5 @@ Build for production:
 npm build
 Start production server:
 npm start
+
+

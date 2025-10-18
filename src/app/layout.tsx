@@ -1,19 +1,15 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Roboto_Mono } from "next/font/google";
 import "./globals.css";
-import { Toaster } from 'react-hot-toast';
+import { Toaster } from "react-hot-toast";
 import StoreProvider from "./storeProvider";
-import { Providers } from './provider';
+import { Providers } from "./provider";
+import Link from "next/link";
 
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const geistSans = Inter({ subsets: ["latin"], variable: "--font-geist-sans" });
+const geistMono = Roboto_Mono({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
-  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
@@ -31,15 +27,21 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <StoreProvider> 
-            <Providers>
-
-             {children}
-            </Providers>
-  
-          
-          </StoreProvider>  
-           <Toaster /> 
+        <StoreProvider>
+          <Providers>
+            <header style={{ marginBottom: 16 }}>
+              <h1 style={{ fontSize: 20, margin: 0 }}>Browza</h1>
+              <nav style={{ marginTop: 8 }}>
+                <Link href="/" style={{ marginRight: 12 }}>
+                  Home
+                </Link>
+                <Link href="/health">Health</Link>
+              </nav>
+            </header>
+            {children}
+          </Providers>
+        </StoreProvider>
+        <Toaster />
       </body>
     </html>
   );
