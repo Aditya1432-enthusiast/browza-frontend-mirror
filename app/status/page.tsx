@@ -37,3 +37,13 @@ export default async function StatusPage() {
     </main>
   );
 }
+
+import Link from "next/link";
+// ...
+<Link
+  href="/status"
+  className="inline-block rounded-full px-6 py-3 font-medium bg-blue-600 text-white hover:bg-blue-700 mt-8"
+>
+  Check Status
+</Link>
+
