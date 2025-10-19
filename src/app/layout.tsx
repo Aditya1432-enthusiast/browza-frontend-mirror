@@ -3,8 +3,10 @@ import { Inter, Roboto_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from 'react-hot-toast';
 const geistSans = Inter({ subsets: ["latin"], variable: "--font-geist-sans" });
-const geistMono = Roboto_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
-
+const geistMono = Roboto_Mono({
+  subsets: ["latin"],
+  variable: "--font-geist-mono",
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
